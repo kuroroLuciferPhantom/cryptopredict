@@ -27,6 +27,7 @@ Le projet utilise une architecture moderne et scalable :
 - **Backend** : NestJS avec architecture microservices
 - **Base de données** : SQLite (en développement), PostgreSQL (en production)
 - **Infrastructure** : Docker, CI/CD avec GitHub Actions
+- **Web3** : Wagmi, Viem, ConnectKit pour l'intégration des wallets
 
 ## Structure du Projet
 
@@ -106,6 +107,18 @@ pnpm dev:web
 pnpm dev:api
 ```
 
+## Configuration Web3 (Phase 2)
+
+Pour utiliser les fonctionnalités Web3 (connexion wallet) :
+
+1. Copiez le fichier `.env.example` en `.env.local` à la racine du projet
+2. Obtenez un ID de projet WalletConnect sur [WalletConnect Cloud](https://cloud.walletconnect.com/)
+3. Ajoutez votre ID dans le fichier `.env.local` :
+   ```
+   NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID=votre_id_de_projet
+   ```
+4. Redémarrez l'application
+
 ## Base de données
 
 Le projet utilise SQLite en développement pour faciliter la prise en main sans nécessiter l'installation de services externes. La base de données est automatiquement créée lors de l'exécution de `pnpm db:push` et est stockée dans le fichier `packages/database/prisma/dev.db`.
@@ -124,6 +137,7 @@ Une fois le projet démarré, vous pouvez y accéder via :
 - **Marketplace** : http://localhost:3000/marketplace
 - **Profil** : http://localhost:3000/profile
 - **Classement** : http://localhost:3000/leaderboard
+- **Exemple Wallet** : http://localhost:3000/wallet-example
 
 ## Dépannage
 
