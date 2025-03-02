@@ -25,8 +25,7 @@ Le projet utilise une architecture moderne et scalable :
 - **Structure** : Monorepo avec Turborepo
 - **Frontend** : Next.js 14+ avec TypeScript et Shadcn/ui
 - **Backend** : NestJS avec architecture microservices
-- **Base de données** : PostgreSQL (données relationnelles) et MongoDB (données non structurées)
-- **Caching** : Redis
+- **Base de données** : SQLite (en développement), PostgreSQL (en production)
 - **Infrastructure** : Docker, CI/CD avec GitHub Actions
 
 ## Structure du Projet
@@ -44,11 +43,20 @@ Pour exécuter ce projet, vous devez avoir installé :
 
 - **Node.js** (version 20+)
 - **pnpm** (version 8.9.0 ou plus récente)
-- **Docker** et **Docker Compose**
 
 ## Installation et démarrage
 
 ### Méthode simple (recommandée)
+
+**Pour Windows :**
+```bash
+# Cloner le repository
+git clone https://github.com/kuroroLuciferPhantom/cryptopredict.git
+cd cryptopredict
+
+# Lancer le script de démarrage
+start-dev.bat
+```
 
 **Pour Linux/Mac :**
 ```bash
@@ -63,16 +71,6 @@ chmod +x start-dev.sh
 ./start-dev.sh
 ```
 
-**Pour Windows :**
-```bash
-# Cloner le repository
-git clone https://github.com/kuroroLuciferPhantom/cryptopredict.git
-cd cryptopredict
-
-# Lancer le script de démarrage
-start-dev.bat
-```
-
 ### Méthode manuelle
 
 ```bash
@@ -80,16 +78,10 @@ start-dev.bat
 git clone https://github.com/kuroroLuciferPhantom/cryptopredict.git
 cd cryptopredict
 
-# Créer un fichier .env basé sur l'exemple
-cp .env.example .env
-
-# Lancer les services Docker
-docker-compose up -d
-
 # Installer les dépendances
 pnpm install
 
-# Générer le client Prisma
+# Générer le client Prisma et initialiser la base de données
 cd packages/database
 pnpm db:generate
 pnpm db:push
@@ -99,13 +91,16 @@ cd ../..
 pnpm dev
 ```
 
+## Base de données
+
+Le projet utilise SQLite en développement pour faciliter la prise en main sans nécessiter l'installation de services externes. La base de données est automatiquement créée lors de l'exécution de `pnpm db:push` et est stockée dans le fichier `packages/database/prisma/dev.db`.
+
 ## Accès aux applications
 
 Une fois le projet démarré, vous pouvez y accéder via :
 
 - **Frontend** : http://localhost:3000
 - **API** : http://localhost:3001
-- **API Documentation** : http://localhost:3001/api/docs
 
 ## Pages principales
 
@@ -117,12 +112,12 @@ Une fois le projet démarré, vous pouvez y accéder via :
 
 ## Dépannage
 
-Si vous rencontrez des problèmes lors du démarrage :
+Si vous rencontrez des problèmes :
 
-1. Vérifiez que Docker est en cours d'exécution
-2. Assurez-vous que les ports 3000, 3001, 5432, 27017 et 6379 sont disponibles
-3. Vérifiez les logs Docker : `docker-compose logs`
-4. Réinitialisez l'environnement : `pnpm clean && docker-compose down -v` puis redémarrez
+1. Vérifiez que Node.js est bien installé et à jour (v20+)
+2. Vérifiez que pnpm est installé : `npm install -g pnpm`
+3. Assurez-vous que les ports 3000 et 3001 sont disponibles
+4. Si la base de données pose problème, vous pouvez la réinitialiser en supprimant le fichier `packages/database/prisma/dev.db` et en exécutant à nouveau `pnpm db:push`
 
 ## License
 
