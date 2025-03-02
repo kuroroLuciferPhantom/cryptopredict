@@ -25,6 +25,7 @@
     "@radix-ui/react-toast": "^1.1.5",
     "@tanstack/react-query": "^5.8.7",
     "@tanstack/react-query-devtools": "^5.8.7",
+    "connectkit": "^1.7.2",
     "next-auth": "^5.0.0-beta.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
@@ -38,6 +39,8 @@
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.159.0",
+    "viem": "^2.7.15",
+    "wagmi": "^2.5.7",
     "zod": "^3.22.4",
     "zustand": "^4.4.7"
   },
