@@ -46,29 +46,41 @@ Pour exécuter ce projet, vous devez avoir installé :
 
 ## Installation et démarrage
 
-### Méthode simple (recommandée)
+### Pour Windows
 
-**Pour Windows :**
+#### Étape 1 : Installation et configuration initiale
+
 ```bash
 # Cloner le repository
 git clone https://github.com/kuroroLuciferPhantom/cryptopredict.git
 cd cryptopredict
 
-# Lancer le script de démarrage
+# Lancer le script de démarrage principal (installe les dépendances et démarre le frontend)
 start-dev.bat
 ```
 
-**Pour Linux/Mac :**
+#### Étape 2 : Démarrer l'API backend (dans une nouvelle fenêtre de terminal)
+
+```bash
+# Dans un nouveau terminal, à la racine du projet
+start-api.bat
+```
+
+### Pour Linux/Mac
+
 ```bash
 # Cloner le repository
 git clone https://github.com/kuroroLuciferPhantom/cryptopredict.git
 cd cryptopredict
 
-# Rendre le script exécutable
+# Rendre les scripts exécutables
 chmod +x start-dev.sh
 
 # Lancer le script de démarrage
 ./start-dev.sh
+
+# Dans un autre terminal
+pnpm dev:api
 ```
 
 ### Méthode manuelle
@@ -87,8 +99,11 @@ pnpm db:generate
 pnpm db:push
 cd ../..
 
-# Lancer le développement
-pnpm dev
+# Lancer le frontend (dans un terminal)
+pnpm dev:web
+
+# Lancer le backend (dans un autre terminal)
+pnpm dev:api
 ```
 
 ## Base de données
@@ -118,6 +133,7 @@ Si vous rencontrez des problèmes :
 2. Vérifiez que pnpm est installé : `npm install -g pnpm`
 3. Assurez-vous que les ports 3000 et 3001 sont disponibles
 4. Si la base de données pose problème, vous pouvez la réinitialiser en supprimant le fichier `packages/database/prisma/dev.db` et en exécutant à nouveau `pnpm db:push`
+5. Assurez-vous de bien lancer le frontend et le backend dans des terminaux séparés
 
 ## License
 
