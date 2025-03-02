@@ -39,3 +39,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 pnpm-lock.yaml
+packages/database/prisma/dev.db
