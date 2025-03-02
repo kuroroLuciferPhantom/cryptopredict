@@ -1,4 +1,4 @@
-import { IsString, IsOptional, IsUrl } from 'class-validator';
+import { IsString, IsOptional } from 'class-validator';
 
 export class UpdateUserDto {
   @IsString()
@@ -9,7 +9,7 @@ export class UpdateUserDto {
   @IsOptional()
   username?: string;
 
-  @IsUrl({}, { message: 'Please provide a valid URL for the image' })
+  @IsString()
   @IsOptional()
   image?: string;
 }

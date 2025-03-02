@@ -1,30 +1,31 @@
-import { Controller, Get, Put, Param, Body, UseGuards, Request, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Patch, Body, Param, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @UseGuards(JwtAuthGuard)
-  @Get('me')
-  async getProfile(@Request() req) {
-    return this.userService.findById(req.user.id);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Put('me')
-  async updateProfile(@Request() req, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(req.user.id, updateUserDto);
+  @Get('profile')
+  getProfile(@Request() req) {
+    return this.userService.getProfile(req.user.id);
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    const user = await this.userService.findById(id);
-    if (!user) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+  findOne(@Param('id') id: string) {
+    return this.userService.findOne(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto, @Request() req) {
+    // Check if the user is trying to update their own profile
+    if (id !== req.user.id) {
+      throw new Error('You can only update your own profile');
     }
-    return user;
+    
+    return this.userService.update(id, updateUserDto);
   }
 }

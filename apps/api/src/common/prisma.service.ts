@@ -5,22 +5,24 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
   constructor() {
     super({
-      log: process.env.NODE_ENV === 'development' ? ['query', 'info', 'warn', 'error'] : ['error'],
+      log: ['query', 'info', 'warn', 'error'],
     });
   }
 
   async onModuleInit() {
+    // Connect to the database when the module is initialized
     await this.$connect();
   }
 
   async onModuleDestroy() {
+    // Disconnect from the database when the module is destroyed
     await this.$disconnect();
   }
 
-  // Helper method for transactions
-  async executeWithTransaction<T>(callback: (prisma: PrismaClient) => Promise<T>): Promise<T> {
+  async cleanDatabase() {
     return this.$transaction(async (prisma) => {
-      return callback(prisma as PrismaClient);
+      // Add cleanup logic if needed for testing or development
+      // E.g., prisma.user.deleteMany(), etc.
     });
   }
 }

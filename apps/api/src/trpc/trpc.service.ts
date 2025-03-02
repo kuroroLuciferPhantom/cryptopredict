@@ -1,12 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { initTRPC } from '@trpc/server';
-import * as trpcExpress from '@trpc/server/adapters/express';
-import { CreateExpressContextOptions } from '@trpc/server/adapters/express';
+import { Request, Response } from 'express';
 
-export type TrpcContext = Awaited<ReturnType<typeof createTrpcContext>>;
+type CreateExpressContextOptions = {
+  req: Request;
+  res: Response;
+};
 
-export const createTrpcContext = ({ req, res }: CreateExpressContextOptions) => {
-  return { req, res };
+type TrpcContext = { req: Request; res: Response };
+
+export const createTrpcContext = (opts: CreateExpressContextOptions): TrpcContext => {
+  return { req: opts.req, res: opts.res };
 };
 
 @Injectable()
@@ -14,15 +18,7 @@ export class TrpcService {
   trpc = initTRPC.context<TrpcContext>().create();
   procedure = this.trpc.procedure;
   router = this.trpc.router;
+  middleware = this.trpc.middleware;
   mergeRouters = this.trpc.mergeRouters;
-
-  createExpressMiddleware = () => {
-    return trpcExpress.createExpressMiddleware({
-      router: this.appRouter,
-      createContext: createTrpcContext,
-    });
-  };
-
-  // Will be set by the AppRouter
-  appRouter: ReturnType<typeof this.router> = null;
+  appRouter: any;
 }

@@ -1,32 +1,36 @@
 import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
-
+import * as bcrypt from 'bcryptjs';
+import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../../common/prisma.service';
-import { RegisterDto } from './dto/register.dto';
 import { User } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
-    private readonly jwtService: JwtService,
+    private prisma: PrismaService,
+    private jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto) {
-    // Check if email already exists
+  async register(createUserDto: CreateUserDto) {
+    // Check if email is already in use
     const existingUser = await this.prisma.user.findUnique({
-      where: { email: registerDto.email },
+      where: {
+        email: createUserDto.email,
+      },
     });
 
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Email already in use');
     }
 
-    // Check if username is unique
-    if (registerDto.username) {
+    // Check if username is already taken (if provided)
+    if (createUserDto.username) {
       const existingUsername = await this.prisma.user.findUnique({
-        where: { username: registerDto.username },
+        where: {
+          username: createUserDto.username,
+        },
       });
 
       if (existingUsername) {
@@ -34,67 +38,63 @@ export class AuthService {
       }
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
-    // Create user
+    // Create the user
     const user = await this.prisma.user.create({
       data: {
-        email: registerDto.email,
+        email: createUserDto.email,
         hashedPassword,
-        name: registerDto.name,
-        username: registerDto.username,
+        name: createUserDto.name,
+        username: createUserDto.username,
       },
     });
 
-    // Remove sensitive data
-    const { hashedPassword: _, ...result } = user;
-
-    // Generate token
+    // Generate JWT
     const token = this.generateToken(user);
 
+    // Return user and token (excluding password)
     return {
-      user: result,
+      user: this.excludePassword(user),
       token,
     };
   }
 
-  async validateUser(email: string, password: string) {
+  async login(loginDto: LoginDto) {
+    // Find user by email
     const user = await this.prisma.user.findUnique({
-      where: { email },
+      where: {
+        email: loginDto.email,
+      },
     });
 
-    if (!user || !user.hashedPassword) {
+    // Check if user exists and password is correct
+    if (!user || !(await this.validatePassword(loginDto.password, user.hashedPassword))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.hashedPassword);
-
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-
-    const { hashedPassword, ...result } = user;
-    return result;
-  }
-
-  async login(user: Omit<User, 'hashedPassword'>) {
+    // Generate JWT
     const token = this.generateToken(user);
 
+    // Return user and token (excluding password)
     return {
-      user,
+      user: this.excludePassword(user),
       token,
     };
   }
 
-  private generateToken(user: Partial<User>) {
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      name: user.name,
-      username: user.username,
-    };
-
+  private generateToken(user: User) {
+    const payload = { sub: user.id, email: user.email };
     return this.jwtService.sign(payload);
+  }
+
+  private async validatePassword(plainPassword: string, hashedPassword: string) {
+    return bcrypt.compare(plainPassword, hashedPassword);
+  }
+
+  private excludePassword(user: User) {
+    const { hashedPassword, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 }
