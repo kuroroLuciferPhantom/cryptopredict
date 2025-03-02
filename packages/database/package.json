@@ -13,9 +13,9 @@
     "dev": "tsc --watch",
     "lint": "eslint \"src/**/*.ts\"",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "db:generate": "prisma generate",
-    "db:push": "prisma db push --skip-generate",
-    "db:studio": "prisma studio"
+    "db:generate": "npx prisma generate",
+    "db:push": "npx prisma db push --skip-generate",
+    "db:studio": "npx prisma studio"
   },
   "dependencies": {
     "@prisma/client": "^5.7.0"

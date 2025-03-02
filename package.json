@@ -3,16 +3,15 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build:all": "turbo run build",
-    "dev:all": "turbo run dev",
-    "dev": "cd apps/web && pnpm dev",
-    "dev:web": "cd apps/web && pnpm dev",
-    "dev:api": "cd apps/api && pnpm dev",
+    "build": "turbo run build",
+    "dev:web": "cd apps/web && npx next dev",
+    "dev:api": "cd apps/api && npx nest start --watch",
+    "setup:db": "cd packages/database && npx prisma generate && npx prisma db push",
+    "db:studio": "cd packages/database && npx prisma studio",
     "lint": "turbo run lint",
     "format": "biome format --write .",
     "clean": "turbo run clean && rm -rf node_modules",
-    "test": "turbo run test",
-    "prepare": "pnpm run build:all"
+    "init": "npm install -g pnpm && pnpm install && npm run setup:db"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
