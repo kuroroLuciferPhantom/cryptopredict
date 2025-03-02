@@ -1,0 +1,26 @@
+{
+  "name": "cryptopredict",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "biome format --write .",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "test": "turbo run test",
+    "prepare": "pnpm run build"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.5.3",
+    "turbo": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@8.9.0"
+}
