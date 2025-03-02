@@ -1,9 +1,11 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Wallet } from 'lucide-react';
+import { ConnectKitButton } from '@/components/wallet/connect-button';
+import { useWallet } from '@/hooks/useWallet';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -12,38 +14,18 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
-  const [walletAddress, setWalletAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Fonction pour se connecter au wallet
-  const connectWallet = async () => {
-    setLoading(true);
-    setError('');
-    
-    try {
-      // Vérifier si window.ethereum est disponible (MetaMask ou autre provider EVM)
-      if (typeof window !== 'undefined' && window.ethereum) {
-        // Demander l'accès au compte
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        
-        // Vérifier si l'utilisateur a accordé l'accès
-        if (accounts && accounts.length > 0) {
-          setWalletAddress(accounts[0]);
-          // Passer à l'étape du choix du pseudo
-          setStep(3);
-        } else {
-          throw new Error('Veuillez autoriser l\'accès à votre wallet');
-        }
-      } else {
-        throw new Error('Aucun wallet EVM détecté. Veuillez installer MetaMask ou un wallet compatible.');
-      }
-    } catch (err: any) {
-      setError(err.message || 'Une erreur est survenue lors de la connexion au wallet');
-    } finally {
-      setLoading(false);
+  // Utilisation du hook useWallet pour accéder aux informations du wallet
+  const { address: walletAddress, isConnected } = useWallet();
+
+  // Effet pour passer à l'étape 3 lorsque le wallet est connecté
+  useEffect(() => {
+    if (method === 'wallet' && isConnected && walletAddress) {
+      setStep(3);
     }
-  };
+  }, [method, isConnected, walletAddress]);
 
   // Gérer l'inscription par email
   const handleEmailSignup = async (e: React.FormEvent) => {
@@ -197,26 +179,49 @@ export default function RegisterPage() {
                   </button>
                 </form>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <p className="text-slate-300 text-sm mb-4">
-                    Connectez-vous avec MetaMask ou tout autre wallet compatible EVM pour continuer.
+                    Connectez-vous avec votre wallet préféré pour créer un compte. Nous prenons en charge MetaMask, WalletConnect, Coinbase Wallet et plus encore.
                   </p>
                   
-                  <button
-                    onClick={connectWallet}
-                    disabled={loading}
-                    className="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg font-medium hover:from-orange-600 hover:to-amber-600 transition-all flex items-center justify-center disabled:opacity-70"
-                  >
-                    <Wallet className="h-5 w-5 mr-2" />
-                    {loading ? 'Connexion...' : 'Connecter mon wallet'}
-                  </button>
+                  {/* Intégration du composant ConnectKit */}
+                  <div className="flex justify-center mb-4">
+                    <ConnectKitButton.Custom>
+                      {({ isConnected, show, truncatedAddress, ensName }) => {
+                        return (
+                          <button
+                            onClick={show}
+                            className="py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center"
+                          >
+                            <Wallet className="h-5 w-5 mr-2" />
+                            {isConnected 
+                              ? `Connecté : ${ensName || truncatedAddress}` 
+                              : 'Choisir un wallet'
+                            }
+                          </button>
+                        );
+                      }}
+                    </ConnectKitButton.Custom>
+                  </div>
                   
-                  {walletAddress && (
-                    <div className="mt-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg break-all">
+                  {isConnected && walletAddress && (
+                    <div className="p-3 bg-green-500/20 border border-green-500/50 rounded-lg break-all">
                       <div className="text-xs text-green-200 font-medium mb-1">Wallet connecté:</div>
                       <div className="text-sm">{walletAddress}</div>
                     </div>
                   )}
+
+                  <div className="pt-4 border-t border-slate-700">
+                    <p className="text-xs text-slate-400 mb-2">Wallets supportés :</p>
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <div className="px-3 py-1 bg-slate-700 rounded-full text-xs">MetaMask</div>
+                      <div className="px-3 py-1 bg-slate-700 rounded-full text-xs">WalletConnect</div>
+                      <div className="px-3 py-1 bg-slate-700 rounded-full text-xs">Coinbase Wallet</div>
+                      <div className="px-3 py-1 bg-slate-700 rounded-full text-xs">Rainbow</div>
+                      <div className="px-3 py-1 bg-slate-700 rounded-full text-xs">Trust Wallet</div>
+                    </div>
+                  </div>
+
                 </div>
               )}
               
