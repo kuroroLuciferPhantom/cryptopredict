@@ -1,15 +1,10 @@
 @echo off
-echo 🚀 Démarrage des services Docker...
-docker-compose up -d
-
 echo 📦 Installation des dépendances...
 call pnpm install
 
-echo 🔧 Génération du client Prisma...
+echo 🔧 Génération du client Prisma et initialisation de la base de données SQLite...
 cd packages\database
 call pnpm db:generate
-
-echo 🛠️ Initialisation de la base de données...
 call pnpm db:push
 cd ..\..
 
