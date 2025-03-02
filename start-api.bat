@@ -1,3 +1,4 @@
 @echo off
 echo ⚡ Démarrage de l'application backend...
-call pnpm dev:api
+cd apps\api
+call pnpm dev
