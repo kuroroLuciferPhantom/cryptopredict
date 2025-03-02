@@ -83,7 +83,7 @@ model Card {
   name             String
   description      String?
   image            String?
-  rarity           Rarity
+  rarity           String   // "COMMON", "RARE", "EPIC", "LEGENDARY", "MYTHIC"
   power            Int
   volatility       Float
   cryptoId         String
@@ -99,21 +99,13 @@ model Card {
   marketListings   MarketListing[]
 }
 
-enum Rarity {
-  COMMON
-  RARE
-  EPIC
-  LEGENDARY
-  MYTHIC
-}
-
 model Prediction {
   id              String   @id @default(cuid())
   userId          String
   user            User     @relation(fields: [userId], references: [id])
   cryptoId        String
   cryptocurrency  Cryptocurrency @relation(fields: [cryptoId], references: [id])
-  predictionType  PredictionType
+  predictionType  String   // "PRICE_TARGET", "PERCENTAGE_CHANGE", "DIRECTION", "STABILITY"
   targetPrice     Float?
   targetChange    Float?
   timeframe       Int      // in hours
@@ -124,21 +116,7 @@ model Prediction {
   resolvedAt      DateTime?
   isCorrect       Boolean?
   reward          Float?
-  status          PredictionStatus @default(ACTIVE)
-}
-
-enum PredictionType {
-  PRICE_TARGET
-  PERCENTAGE_CHANGE
-  DIRECTION
-  STABILITY
-}
-
-enum PredictionStatus {
-  ACTIVE
-  RESOLVED
-  EXPIRED
-  CANCELED
+  status          String   @default("ACTIVE") // "ACTIVE", "RESOLVED", "EXPIRED", "CANCELED"
 }
 
 model PriceHistory {
@@ -171,19 +149,8 @@ model MarketListing {
   sellerId    String
   seller      User     @relation(fields: [sellerId], references: [id])
   price       Float
-  currency    Currency @default(INGAME)
+  currency    String   @default("INGAME") // "INGAME", "ETH" 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  status      ListingStatus @default(ACTIVE)
-}
-
-enum Currency {
-  INGAME
-  ETH
-}
-
-enum ListingStatus {
-  ACTIVE
-  SOLD
-  CANCELED
+  status      String   @default("ACTIVE") // "ACTIVE", "SOLD", "CANCELED"
 }
