@@ -4,7 +4,7 @@ import { TrpcService } from './trpc.service';
 
 @Injectable()
 export class TrpcRouter {
-  constructor(private readonly trpcService: TrpcService) {
+  constructor(public readonly trpcService: TrpcService) {
     this.initialize();
   }
 

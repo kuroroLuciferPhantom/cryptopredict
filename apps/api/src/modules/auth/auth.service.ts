@@ -4,7 +4,16 @@ import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { PrismaService } from '../../common/prisma.service';
-import { User } from '@prisma/client';
+
+// Définition simplifiée de User pour résoudre les problèmes d'import
+interface User {
+  id: string;
+  email: string;
+  hashedPassword: string;
+  name?: string;
+  username?: string;
+  [key: string]: any;
+}
 
 @Injectable()
 export class AuthService {

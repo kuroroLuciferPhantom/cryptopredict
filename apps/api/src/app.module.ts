@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { BullModule } from '@nestjs/bull';
+// Suppression temporaire de l'import BullModule qui cause des erreurs
+// import { BullModule } from '@nestjs/bull';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { TrpcModule } from './trpc/trpc.module';
@@ -23,6 +24,8 @@ import { AppService } from './app.service';
       inject: [ConfigService],
       global: true,
     }),
+    // BullModule temporairement commenté
+    /*
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
@@ -33,6 +36,7 @@ import { AppService } from './app.service';
       }),
       inject: [ConfigService],
     }),
+    */
     AuthModule,
     UserModule,
     TrpcModule,

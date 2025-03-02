@@ -9,11 +9,13 @@ export class UserService {
   async findOne(id: string) {
     const user = await this.prisma.user.findUnique({
       where: { id },
-      include: {
-        cards: true,
-        predictions: true,
-        league: true,
-      },
+      // Pour l'instant, on simplifie l'inclusion car les relations ne sont pas définies
+      // dans notre service Prisma simplifié
+      // include: {
+      //   cards: true,
+      //   predictions: true,
+      //   league: true,
+      // },
     });
 
     if (!user) {
