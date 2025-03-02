@@ -1,0 +1,189 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              String    @id @default(cuid())
+  name            String?
+  email           String    @unique
+  emailVerified   DateTime?
+  image           String?
+  hashedPassword  String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  username        String?   @unique
+
+  accounts        Account[]
+  sessions        Session[]
+  cards           Card[]
+  predictions     Prediction[]
+  walletBalance   Float     @default(0.0)
+  experience      Int       @default(0)
+  leagueId        String?
+  league          League?   @relation(fields: [leagueId], references: [id])
+  marketListings  MarketListing[]
+}
+
+model Account {
+  id                 String   @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Cryptocurrency {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  name        String
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  cards       Card[]
+  predictions Prediction[]
+  priceHistory PriceHistory[]
+}
+
+model Card {
+  id               String   @id @default(cuid())
+  name             String
+  description      String?
+  image            String?
+  rarity           Rarity
+  power            Int
+  volatility       Float
+  cryptoId         String
+  cryptocurrency   Cryptocurrency @relation(fields: [cryptoId], references: [id])
+  userId           String?
+  owner            User?    @relation(fields: [userId], references: [id])
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  isNFT            Boolean  @default(false)
+  nftTokenId       String?  @unique
+  bonusAttributes  String?  // JSON string for SQLite compatibility
+  
+  marketListings   MarketListing[]
+}
+
+enum Rarity {
+  COMMON
+  RARE
+  EPIC
+  LEGENDARY
+  MYTHIC
+}
+
+model Prediction {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  cryptoId        String
+  cryptocurrency  Cryptocurrency @relation(fields: [cryptoId], references: [id])
+  predictionType  PredictionType
+  targetPrice     Float?
+  targetChange    Float?
+  timeframe       Int      // in hours
+  startPrice      Float
+  endPrice        Float?
+  startedAt       DateTime @default(now())
+  expiresAt       DateTime
+  resolvedAt      DateTime?
+  isCorrect       Boolean?
+  reward          Float?
+  status          PredictionStatus @default(ACTIVE)
+}
+
+enum PredictionType {
+  PRICE_TARGET
+  PERCENTAGE_CHANGE
+  DIRECTION
+  STABILITY
+}
+
+enum PredictionStatus {
+  ACTIVE
+  RESOLVED
+  EXPIRED
+  CANCELED
+}
+
+model PriceHistory {
+  id          String   @id @default(cuid())
+  cryptoId    String
+  crypto      Cryptocurrency @relation(fields: [cryptoId], references: [id])
+  price       Float
+  timestamp   DateTime @default(now())
+  volume      Float?
+  marketCap   Float?
+
+  @@index([cryptoId, timestamp])
+}
+
+model League {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  minExp      Int
+  maxExp      Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  users       User[]
+}
+
+model MarketListing {
+  id          String   @id @default(cuid())
+  cardId      String
+  card        Card     @relation(fields: [cardId], references: [id])
+  sellerId    String
+  seller      User     @relation(fields: [sellerId], references: [id])
+  price       Float
+  currency    Currency @default(INGAME)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  status      ListingStatus @default(ACTIVE)
+}
+
+enum Currency {
+  INGAME
+  ETH
+}
+
+enum ListingStatus {
+  ACTIVE
+  SOLD
+  CANCELED
+}
