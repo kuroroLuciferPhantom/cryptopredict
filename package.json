@@ -7,17 +7,17 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "turbo run build",
+    "build:all": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "biome format --write .",
     "clean": "turbo run clean && rm -rf node_modules",
     "test": "turbo run test",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build:all"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "turbo": "^2.0.0"
+    "turbo": "^1.10.16"
   },
   "engines": {
     "node": ">=20.0.0"
