@@ -9,6 +9,9 @@ call pnpm db:push
 cd ..\..
 
 echo ⚡ Démarrage de l'application frontend...
-echo ⚡ Ouvrez une nouvelle fenêtre de terminal et exécutez `pnpm dev:api` pour démarrer le backend...
+echo.
+echo ⚡ IMPORTANT : Ouvrez une nouvelle fenêtre de terminal et exécutez 'start-api.bat' pour démarrer le backend.
+echo.
 
-call pnpm dev:web
+cd apps\web
+call pnpm dev
