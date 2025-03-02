@@ -8,5 +8,7 @@ call pnpm db:generate
 call pnpm db:push
 cd ..\..
 
-echo ⚡ Démarrage du projet en mode développement...
-call pnpm dev
+echo ⚡ Démarrage de l'application frontend...
+echo ⚡ Ouvrez une nouvelle fenêtre de terminal et exécutez `pnpm dev:api` pour démarrer le backend...
+
+call pnpm dev:web
