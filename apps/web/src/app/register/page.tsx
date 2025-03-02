@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Wallet } from 'lucide-react';
-import { ConnectKitButton } from '@/components/wallet/connect-button';
+import { ConnectKitButton } from 'connectkit';
 import { useWallet } from '@/hooks/useWallet';
 
 export default function RegisterPage() {
@@ -186,22 +186,15 @@ export default function RegisterPage() {
                   
                   {/* Intégration du composant ConnectKit */}
                   <div className="flex justify-center mb-4">
-                    <ConnectKitButton.Custom>
-                      {({ isConnected, show, truncatedAddress, ensName }) => {
-                        return (
-                          <button
-                            onClick={show}
-                            className="py-3 px-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 transition-all flex items-center justify-center"
-                          >
-                            <Wallet className="h-5 w-5 mr-2" />
-                            {isConnected 
-                              ? `Connecté : ${ensName || truncatedAddress}` 
-                              : 'Choisir un wallet'
-                            }
-                          </button>
-                        );
-                      }}
-                    </ConnectKitButton.Custom>
+                    <ConnectKitButton theme="midnight" customTheme={{
+                      "--ck-font-family": "Inter, sans-serif",
+                      "--ck-border-radius": "8px",
+                      "--ck-overlay-background": "rgba(0, 0, 0, 0.8)",
+                      "--ck-body-background": "#1e293b",
+                      "--ck-body-color": "white",
+                      "--ck-primary-button-background": "linear-gradient(to right, #2563eb, #4f46e5)",
+                      "--ck-primary-button-hover-background": "linear-gradient(to right, #1d4ed8, #4338ca)",
+                    }} />
                   </div>
                   
                   {isConnected && walletAddress && (
