@@ -5,7 +5,7 @@
   "scripts": {
     "build:all": "turbo run build",
     "dev:all": "turbo run dev",
-    "dev": "concurrently \"npm run dev:web\" \"npm run dev:api\"",
+    "dev": "cd apps/web && pnpm dev",
     "dev:web": "cd apps/web && pnpm dev",
     "dev:api": "cd apps/api && pnpm dev",
     "lint": "turbo run lint",
@@ -16,7 +16,6 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.5.3",
-    "concurrently": "^8.2.2",
     "turbo": "^1.10.16"
   },
   "engines": {
